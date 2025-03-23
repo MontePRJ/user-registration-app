@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: user-registration-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 5000
+
+env:
+  - name: DB_HOST
+    value: my-postgres.application.svc.cluster.local
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_NAME
+    value: flaskdb
+  - name: DB_USER
+    value: flaskuser
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: my-postgres
+        key: postgresql-password
+
+ingress:
+  enabled: true
+  host: flask.local

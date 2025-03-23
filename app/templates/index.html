@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrazione Utente</title>
+</head>
+<body>
+  <h1>Registra un nuovo utente</h1>
+  <form id="registration-form">
+    <input type="text" name="name" placeholder="Nome" required>
+    <input type="text" name="surname" placeholder="Cognome" required>
+    <button type="submit">Registra</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('registration-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const surname = this.surname.value;
+
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, surname })
+      });
+
+      const result = await res.json();
+      document.getElementById('result').innerText = result.message || 'Errore';
+    });
+  </script>
+</body>
+</html>

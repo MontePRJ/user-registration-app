@@ -17,8 +17,6 @@ spec:
         - name: user-registration-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-      imagePullSecrets:
-        - name: ghcr-secret
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
@@ -33,3 +31,5 @@ spec:
                   key: {{ .valueFrom.secretKeyRef.key }}
               {{- end }}
             {{- end }}
+      imagePullSecrets:
+        - name: ghcr-secret

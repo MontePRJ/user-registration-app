@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: user-registration-app
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/monteprj/user-registration-app
   tag: "latest"
+  pullPolicy: Always
 
 service:
   type: ClusterIP

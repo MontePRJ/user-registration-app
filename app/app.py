@@ -8,19 +8,42 @@ def get_db_connection():
         host="my-postgres",
         database="flaskdb",
         user="flaskuser",
-        password="password"  # usa un Secret in produzione!
+        password="password"  # Da usare solo in dev. In prod mettiamo un Secret.
     )
     return conn
 
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.get_json(force=True)
-    name = data.get('name')
-    surname = data.get('surname')
+    data = request.get_json()
+    if not data or 'name' not in data or 'surname' not in data:
+        return jsonify({'error': 'Invalid input'}), 400
 
-    if not name or not surname:
-        return jsonify({'error': 'Missing name or surname'}), 400
+    name = data['name']
+    surname = data['surname']
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("INSERT INTO users (
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO users (name, surname) VALUES (%s, %s)", (name, surname))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({'message': 'User registered'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/users', methods=['GET'])
+def users():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT name, surname FROM users")
+        users = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(users)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
